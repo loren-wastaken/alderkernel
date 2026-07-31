@@ -4,7 +4,7 @@ OBJ = boot.o main.o print.o
 # flags and path to headers folder
 CFLAGS = -m32 -ffreestanding -O0 -fno-pic -fno-pie -fno-stack-protector -Ikernel/headers -Ikernel -c
 
-all: moj_system.iso
+all: alderkernel.iso
 
 boot.o: boot.asm
 	# assemble bootloader to elf32 for grub
@@ -22,16 +22,16 @@ kernel.bin: $(OBJ)
 	# link everything using linker script
 	ld -m elf_i386 -T linker.ld --build-id=none $(OBJ) -o kernel.bin
 
-moj_system.iso: kernel.bin
+alderkernel.iso: kernel.bin
 	# build grub iso image
 	mkdir -p iso/boot/grub
 	cp kernel.bin iso/boot/
 	cp grub.cfg iso/boot/grub/
-	grub-mkrescue -o moj_system.iso iso
+	grub-mkrescue -o alderkernel.iso iso
 
 clean:
-	rm -rf *.o *.bin moj_system.iso iso/
+	rm -rf *.o *.bin alderkernel.iso iso/
 
-run: moj_system.iso
+run: alderkernel.iso
 	# run iso in qemu
-	qemu-system-i386 -cdrom moj_system.iso
+	qemu-system-i386 -cdrom alderkernel.iso
