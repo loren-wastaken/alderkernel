@@ -31,6 +31,8 @@ void kernel_start() {
     print_text("Thank you for atleast turning on this Kernel!\nFor now, it's uncontrollable.");
     
     // __asm__ volatile("sti"); this fucking bug
+    // i think of why the ^^ was crashing the entire kernel and doing TRF (triple fault)
+    // is becasue i didnt complete interrupt pipeline
 
     while(1) {
         __asm__ __volatile__("hlt");
