@@ -1,5 +1,5 @@
 # object files
-OBJ = boot.o main.o print.o idt_asm.o idt_c-code.o
+OBJ = boot.o main.o print.o idt_asm.o idt_c-code.o io.o ps2_driver.o
 
 # flags and path to headers folder
 CFLAGS = -m32 -ffreestanding -O0 -fno-pic -fno-pie -fno-stack-protector -Ikernel/headers -Ikernel -c
@@ -25,6 +25,14 @@ idt_asm.o: kernel/idt/idt_asm.asm
 idt_c-code.o: kernel/idt/idt.c
 	# compile c version of idt
 	gcc $(CFLAGS) kernel/idt/idt.c -o idt_c-code.o
+
+io.o:
+	# compile hardware port input/output fn
+	gcc $(CFLAGS) kernel/io.c -o io.o
+
+ps2_driver.o:
+	# compile ps2 driver
+	gcc $(CFLAGS) kernel/drivers/ps2.c -o ps2_driver.o
 
 kernel.bin: $(OBJ)
 	# link everything using linker script

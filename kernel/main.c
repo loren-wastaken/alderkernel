@@ -30,6 +30,8 @@ void kernel_start() {
     print_text("Welcome to Alder Kernel, there's no shell but\nit will be built later.\n");
     print_text("Thank you for atleast turning on this Kernel!\nFor now, it's uncontrollable.");
     
+    // __asm__ volatile("sti"); this fucking bug
+
     while(1) {
         __asm__ __volatile__("hlt");
     }
