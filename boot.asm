@@ -20,8 +20,10 @@ _start:
     ; just setup a safe stack pointer in bss section
     mov esp, stack_top   
 
-    ; execute kernel code
+    ; pass multiboot info pointer (in ebx) to kernel_start
+    push ebx
     call kernel_start   
+    add esp, 4
 
 _loop:
     hlt
