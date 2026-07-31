@@ -11,8 +11,11 @@ void print_text(const char* str) {
     for (int i = 0; str[i] != '\0'; i++) {
         // handle newline char
         if (str[i] == '\n') {
-            // move cursor to the start of the next row
             cursor_index = ((cursor_index / SCREEN_WIDTH) + 1) * SCREEN_WIDTH;
+            // clamp here too same as below
+            if (cursor_index >= 2000) {
+                cursor_index = 0;
+            }
             continue;
         }
 
