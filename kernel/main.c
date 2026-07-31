@@ -1,6 +1,7 @@
 #include "headers/print.h"
 #include "headers/colors.h"
 #include "headers/screen.h"
+#include "idt/idt.h"
 
 volatile int is_cleared = 0;
 
@@ -21,6 +22,9 @@ void clear_screen(unsigned char color) {
 
 void kernel_start() {
     clear_screen(BLACK); 
+    
+    // init interrupt descriptor table
+    idt_init();
 
     print_text("ALDER KERNEL LOADED SUCCESSFULLY\n");
     print_text("Welcome to Alder Kernel, there's no shell but\nit will be built later.\n");

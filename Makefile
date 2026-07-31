@@ -1,5 +1,5 @@
 # object files
-OBJ = boot.o main.o print.o
+OBJ = boot.o main.o print.o idt_asm.o idt_c-code.o
 
 # flags and path to headers folder
 CFLAGS = -m32 -ffreestanding -O0 -fno-pic -fno-pie -fno-stack-protector -Ikernel/headers -Ikernel -c
@@ -17,6 +17,14 @@ main.o: kernel/main.c
 print.o: kernel/print.c
 	# compile printing and screen functions
 	gcc $(CFLAGS) kernel/print.c -o print.o
+
+idt_asm.o: kernel/idt/idt_asm.asm
+	# compile interrupt descriptor table
+	nasm -f elf32 kernel/idt/idt_asm.asm -o idt_asm.o
+
+idt_c-code.o: kernel/idt/idt.c
+	# compile c version of idt
+	gcc $(CFLAGS) kernel/idt/idt.c -o idt_c-code.o
 
 kernel.bin: $(OBJ)
 	# link everything using linker script
