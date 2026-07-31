@@ -1,5 +1,5 @@
 # object files
-OBJ = boot.o main.o print.o idt_asm.o idt_c-code.o io.o ps2_driver.o elf_loader.o
+OBJ = boot.o main.o print.o idt_asm.o idt_c-code.o io.o ps2_driver.o
 
 # flags and path to headers folder
 CFLAGS = -m32 -ffreestanding -O0 -fno-pic -fno-pie -fno-stack-protector -Ikernel/headers -Ikernel -c
@@ -33,10 +33,6 @@ io.o:
 ps2_driver.o:
 	# compile ps2 driver
 	gcc $(CFLAGS) kernel/drivers/ps2.c -o ps2_driver.o
-
-elf_loader.o:
-	# compile elf loader
-	gcc $(CFLAGS) kernel/elf_loader.c -o elf_loader.o
 
 kernel.bin: $(OBJ)
 	# link everything using linker script
