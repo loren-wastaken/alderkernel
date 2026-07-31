@@ -2,3 +2,5 @@
 *.iso
 *.bin
 iso/
+*.tar
+*.tar.gz
