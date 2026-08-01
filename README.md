@@ -23,8 +23,9 @@ What these tools do?
 ### gcc or 'GNU Compiler Collection' compiles all .c (C code) files to .o and they get into file kernel.bin.
 ### make is a tool for [Makefile](Makefile) file that makes compiling easier instead of typing long commands that you can misspell.
 ### ld links all files so they can get usable.
+### QEMU turns on Virtual Machine or 'VM' and makes debugging/turning on machine without rebooting easier!
 
---------------- How to run -------------------
+# How to run
 
 After building:
 
