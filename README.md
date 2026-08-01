@@ -1,5 +1,8 @@
 # Alder Kernel
-## Alder Kernel is a hobby operating system kernel made purely for learning. So there might be some errors/inefficient ways to do coding and etc. I do not prefer to make real code from this Kernel.
+## A hobby operating system kernel written from scratch in C and Assembly for educational purposes.
+
+This project is intended for learning and experimentation. You are welcome to use it as a foundation for your own operating system.
+
 ### This kernel is built for i386 architecture (x86 or x32 how you prefer to say it.).
 # Features
 
