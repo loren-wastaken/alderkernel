@@ -1,6 +1,10 @@
 #include "headers/commands.h"
 #include "headers/util.h"
 #include "../headers/print.h"
+#include "headers/commands.h"
+#include "headers/util.h"
+#include "../headers/print.h"
+#include "../syscalls/syscall.h"
 
 // command: uname
 // options: -a (all), -s (kernel name, default), -r (release), -m (machine)
@@ -34,8 +38,6 @@ void command_uname(char* option)
 
 
 // command: req-syscallop <syscall number>
-// Placeholder until the syscall interface is written - just parses
-// and echoes the requested number back for now.
 void command_req_syscallop(char* arg)
 {
     if (arg == (char*)0) {
@@ -45,10 +47,11 @@ void command_req_syscallop(char* arg)
 
     unsigned int syscall_num = str_to_uint(arg);
 
-    print_text("Syscall request queued: #");
+    print_text("Syscall requested: #");
     print_uint(syscall_num);
     print_text("\n");
-    print_text("Syscall interface not implemented yet.\n");
+
+    syscall_dispatch(syscall_num);
 }
 
 

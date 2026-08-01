@@ -1,7 +1,6 @@
 # object files
 OBJ_DIR = objects
-OBJ = $(addprefix $(OBJ_DIR)/, boot.o main.o print.o idt_asm.o idt_c-code.o io.o ps2_driver.o shell.o interpreter.o pic_driver.o util.o sysinfo_commands.o vfs.o initramfs.o fs_commands.o)
-
+OBJ = $(addprefix $(OBJ_DIR)/, boot.o main.o print.o idt_asm.o idt_c-code.o io.o ps2_driver.o shell.o interpreter.o pic_driver.o util.o sysinfo_commands.o vfs.o initramfs.o fs_commands.o syscall.o)
 # flags and path to headers folder
 CFLAGS = -m32 -ffreestanding -O0 -fno-pic -fno-pie -fno-stack-protector -Ikernel/headers -Ikernel -mno-sse -mno-sse2 -mno-mmx -msoft-float -c
 
@@ -71,6 +70,10 @@ $(OBJ_DIR)/fs_commands.o: kernel/shell/fs_commands.c | $(OBJ_DIR)
 	# compile ls/cd/pwd/cat shell commands
 	gcc $(CFLAGS) kernel/shell/fs_commands.c -o $(OBJ_DIR)/fs_commands.o
 
+$(OBJ_DIR)/syscall.o: kernel/syscalls/syscall.c | $(OBJ_DIR)
+	# compile syscall dispatcher
+	gcc $(CFLAGS) kernel/syscalls/syscall.c -o $(OBJ_DIR)/syscall.o
+	
 kernel.bin: $(OBJ)
 	# link everything using linker script
 	ld -m elf_i386 -T linker.ld --build-id=none $(OBJ) -o kernel.bin
