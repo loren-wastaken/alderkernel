@@ -5,3 +5,6 @@ iso/
 objects/
 *.tar
 *.tar.gz
+*.gz
+*_tar.gz
+alderkernel_tar.gz
