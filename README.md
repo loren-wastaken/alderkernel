@@ -5,6 +5,12 @@ This project is intended for learning and experimentation. You are welcome to us
 
 **Architecture:** i386 (32-bit x86)
 
+## Legend:
+
+🛠️ - Building/working on it
+
+[X] - Working/Stable
+
 ## Features
 
 - PS/2 Keyboard support [X]
