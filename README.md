@@ -17,7 +17,7 @@
  - After downloading
 ### `cd` into the directory alderkernel
  - Making sure that you have EVERY tool
-### This project needs: NASM,gcc,make and ld
+### This project needs: NASM,gcc,make,ld and QEMU
 What these tools do?
 ### NASM assembles needed files for boot (boot.asm and etc.) that are NEEDED to turn on the kernel.
 ### gcc or 'GNU Compiler Collection' compiles all .c (C code) files to .o and they get into file kernel.bin.
