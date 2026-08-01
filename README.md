@@ -3,7 +3,7 @@
 ### This kernel is built for i386 architecture (x86 or x32 how you prefer to say it.).
 # Features
 
-1st. PS/2 Keyboard support first, needed USB to PS/2 converter or PS/2 compatible keyboard, or start with an VM (PS/2 Keyboard support added!)
+1st. PS/2 Keyboard support, needed USB to PS/2 converter or PS/2 compatible keyboard, or start with an VM (PS/2 Keyboard support added!)
 
 2nd. InitramFS (Added!)
 
