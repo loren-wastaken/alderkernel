@@ -15,9 +15,9 @@ This project is intended for learning and experimentation. You are welcome to us
 
 - [x] PS/2 Keyboard support 
 
--  🛠️ InitramFS 
+- [x] InitramFS 
 
--  🛠️ Shell 
+-  🛠️ Shell (W.I.P, adding new features and commands!)
 
 - [x] Shell history 
 
