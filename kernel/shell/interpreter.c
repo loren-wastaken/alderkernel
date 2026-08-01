@@ -77,6 +77,18 @@ void interpret_command(char* input)
     else if (strcmp(input, "cat") == 0) {
         command_cat(args);
     }
+    else if (strcmp(input, "meminfo") == 0) {
+        command_meminfo();
+    }
+    else if (strcmp(input, "loop") == 0) {
+        command_loop(args);
+    }
+    else if (strcmp(input, "diskinfo") == 0) {
+        command_diskinfo();
+    }
+    else if (strcmp(input, "partinfo") == 0) {
+        command_partinfo();
+    }
     else {
         print_text("Unknown command: ");
         print_text(input);

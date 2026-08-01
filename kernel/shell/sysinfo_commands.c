@@ -5,6 +5,10 @@
 #include "headers/util.h"
 #include "../headers/print.h"
 #include "../syscalls/syscall.h"
+#include "../mm/pmm.h"
+#include "../mm/heap.h"
+#include "../drivers/ata.h"
+#include "../fs/mbr.h"
 
 // command: uname
 // options: -a (all), -s (kernel name, default), -r (release), -m (machine)
@@ -101,5 +105,81 @@ void command_memtest(void)
         print_text("Memory test FAILED - ");
         print_uint(failures);
         print_text(" word mismatches.\n");
+    }
+}
+
+// command: meminfo
+void command_meminfo(void)
+{
+    print_text("Physical memory: ");
+    print_uint(pmm_get_free_page_count());
+    print_text(" / ");
+    print_uint(pmm_get_total_page_count());
+    print_text(" pages free (");
+    print_uint(pmm_get_free_page_count() * 4);
+    print_text(" KB)\n");
+
+    print_text("Heap: ");
+    print_uint(heap_get_free_bytes());
+    print_text(" bytes free, ");
+    print_uint(heap_get_used_bytes());
+    print_text(" bytes used\n");
+}
+// command: diskinfo
+void command_diskinfo(void)
+{
+    print_text("Probing primary ATA bus (master)...\n");
+
+    if (!ata_identify()) {
+        print_text("No drive detected.\n");
+        return;
+    }
+
+    print_text("Drive detected. Reading sector 0 (MBR)...\n");
+
+    unsigned char sector[512];
+    if (!ata_read_sector(0, sector)) {
+        print_text("Read failed.\n");
+        return;
+    }
+
+    print_text("First 16 bytes: ");
+    for (int i = 0; i < 16; i++) {
+        print_hex(sector[i]);
+        print_text(" ");
+    }
+    print_text("\n");
+
+    print_text("Boot signature (should be 0xAA55 at offset 510): ");
+    print_hex(sector[510] | (sector[511] << 8));
+    print_text("\n");
+}
+// command: partinfo
+void command_partinfo(void)
+{
+    mbr_partition_t parts[4];
+    int used = mbr_read_partitions(parts);
+
+    if (used == 0) {
+        print_text("No valid MBR found (disk is unpartitioned).\n");
+        return;
+    }
+
+    for (int i = 0; i < 4; i++) {
+        if (parts[i].type == 0) {
+            continue;
+        }
+
+        print_text("Partition ");
+        print_uint(i);
+        print_text(": type=");
+        print_hex(parts[i].type);
+        print_text(" bootable=");
+        print_uint(parts[i].bootable);
+        print_text(" start_lba=");
+        print_uint(parts[i].lba_start);
+        print_text(" sectors=");
+        print_uint(parts[i].sector_count);
+        print_text("\n");
     }
 }

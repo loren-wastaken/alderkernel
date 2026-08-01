@@ -16,6 +16,12 @@ global _start
 extern kernel_start ; main.c entry point
 
 _start:
+    ; GRUB hands us: eax = multiboot magic, ebx = ptr to multiboot info
+    ; struct (which contains the memory map the PMM needs). Both must be
+    ; saved IMMEDIATELY - the GDT/segment-reload code below clobbers eax.
+    mov [multiboot_magic], eax
+    mov [multiboot_info_ptr], ebx
+
     ; Don't trust GRUB's leftover GDT/selectors - load our own known-good
     ; flat GDT so selector 0x08/0x10 used by idt_set_gate() are guaranteed
     ; to be a valid flat code/data segment.
@@ -34,10 +40,13 @@ _start:
     mov ss, ax
 
     ; just setup a safe stack pointer in bss section
-    mov esp, stack_top   
+    mov esp, stack_top
 
-    ; execute kernel code
-    call kernel_start   
+    ; pass (magic, multiboot_info_ptr) to kernel_start - cdecl pushes
+    ; right-to-left, so push info_ptr first, magic last (ends up first arg)
+    push dword [multiboot_info_ptr]
+    push dword [multiboot_magic]
+    call kernel_start
 
 _loop:
     hlt
@@ -75,3 +84,6 @@ align 16
 stack_bottom:
     resb 16384 ; 16 KB of safe stack space
 stack_top:
+
+multiboot_magic:    resd 1
+multiboot_info_ptr: resd 1

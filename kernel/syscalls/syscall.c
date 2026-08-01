@@ -1,5 +1,6 @@
 #include "syscall.h"
 #include "../headers/print.h"
+#include "../mm/heap.h"
 
 static void sys_panic(void)
 {
@@ -30,6 +31,32 @@ static void sys_test_divzero(void)
     // unreachable - isr_exception_handler (idt.c) halts the CPU first
 }
 
+#define SYSCALL_TEST_ALLOC_SIZE 128
+
+// deliberately does NOT kfree() what it allocates - the point is to
+// let you watch meminfo's used-byte count actually move and stay
+// moved, proving kmalloc really handed out real, persistent memory
+// (not just returning a pointer that gets silently reclaimed).
+static void sys_request_ram(void)
+{
+    void* ptr = kmalloc(SYSCALL_TEST_ALLOC_SIZE);
+
+    if (ptr == (void*)0) {
+        print_text("sys_request_ram: kmalloc failed - out of heap memory.\n");
+        return;
+    }
+
+    print_text("sys_request_ram: allocated ");
+    print_uint(SYSCALL_TEST_ALLOC_SIZE);
+    print_text(" bytes at ");
+    print_hex((unsigned int)ptr);
+    print_text("\nheap now: ");
+    print_uint(heap_get_free_bytes());
+    print_text(" bytes free, ");
+    print_uint(heap_get_used_bytes());
+    print_text(" bytes used\n");
+}
+
 void syscall_dispatch(unsigned int num)
 {
     switch (num) {
@@ -42,7 +69,7 @@ void syscall_dispatch(unsigned int num)
             break;
 
         case SYS_REQUEST_RAM:
-            print_text("sys_request_ram: not implemented yet (heap allocator not ready).\n");
+            sys_request_ram();
             break;
 
         case SYS_UNKNOWN_03:

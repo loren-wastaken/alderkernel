@@ -46,6 +46,12 @@ or manually:
 ```bash
 qemu-system-i386 -cdrom alderkernel.iso`
 ```
+## Building apps for AlderKernel
+
+Not possible yet - see [apps.md](apps.md) for the planned prerequisite
+chain (installer, disk/partition detection, ext4, ELF loading) and
+current status.
+
 [Author](https://github.com/loren-wastaken)
 
 **License:** [MIT](LICENSE)

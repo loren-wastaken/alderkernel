@@ -8,3 +8,4 @@ objects/
 *.gz
 *_tar.gz
 alderkernel_tar.gz
+disk.img

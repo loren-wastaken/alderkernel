@@ -12,4 +12,6 @@ SECTIONS
     .rodata : ALIGN(4K) { *(.rodata) }
     .data   : ALIGN(4K) { *(.data) }
     .bss    : ALIGN(4K) { *(.bss) }
+
+    _kernel_end = .;
 }
