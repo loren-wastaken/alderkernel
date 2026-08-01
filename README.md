@@ -1,7 +1,8 @@
 # Alder Kernel
 ## Alder Kernel is a hobby operating system kernel made purely for learning. So there might be some errors/inefficient ways to do coding and etc. I do not prefer to make real code from this Kernel.
 ### This kernel is built for i386 architecture (x86 or x32 how you prefer to say it.).
---------------- Features------------------------
+# Features
+
 1st. PS/2 Keyboard support first, needed USB to PS/2 converter or PS/2 compatible keyboard, or start with an VM (PS/2 Keyboard support added!)
 
 2nd. InitramFS (Added!)
@@ -9,7 +10,8 @@
 3rd. Shell (Added too!)
 
 4th. Shell History (Added!)
---------------- How to build -------------------
+
+# How to build 
  - Clone git repo
 ### by typing `git clone https://github.com/loren-wastaken/alderkernel`
  - After downloading
