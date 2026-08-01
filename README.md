@@ -5,15 +5,15 @@ This project is intended for learning and experimentation. You are welcome to us
 
 **Architecture:** i386 (32-bit x86)
 
-# Features
+## Features
 
-1st. PS/2 Keyboard support, needed USB to PS/2 converter or PS/2 compatible keyboard, or start with an VM (PS/2 Keyboard support added!)
+- PS/2 Keyboard support [X]
 
-2nd. InitramFS (Added!)
+- InitramFS 🛠️
 
-3rd. Shell (Added too!)
+- Shell 🛠️
 
-4th. Shell History (Added!)
+- Shell history [X]
 
 # How to build 
  - Clone git repo
