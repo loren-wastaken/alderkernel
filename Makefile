@@ -1,8 +1,8 @@
 # object files
-OBJ = boot.o main.o print.o idt_asm.o idt_c-code.o io.o ps2_driver.o
+OBJ = boot.o main.o print.o idt_asm.o idt_c-code.o io.o ps2_driver.o shell.o interpreter.o pic_driver.o util.o sysinfo_commands.o vfs.o initramfs.o fs_commands.o
 
 # flags and path to headers folder
-CFLAGS = -m32 -ffreestanding -O0 -fno-pic -fno-pie -fno-stack-protector -Ikernel/headers -Ikernel -c
+CFLAGS = -m32 -ffreestanding -O0 -fno-pic -fno-pie -fno-stack-protector -Ikernel/headers -Ikernel -mno-sse -mno-sse2 -mno-mmx -msoft-float -c
 
 all: alderkernel.iso
 
@@ -33,6 +33,38 @@ io.o:
 ps2_driver.o:
 	# compile ps2 driver
 	gcc $(CFLAGS) kernel/drivers/ps2.c -o ps2_driver.o
+
+shell.o:
+	# compile zSlash Shell
+	gcc $(CFLAGS) kernel/shell/shell.c -o shell.o
+
+interpreter.o:
+	# compile Shell command interpreter
+	gcc $(CFLAGS) kernel/shell/interpreter.c -o interpreter.o
+
+pic_driver.o: kernel/interrupts/pic.c
+	# compile pic driver
+	gcc $(CFLAGS) kernel/interrupts/pic.c -o pic_driver.o
+
+util.o: kernel/shell/util.c
+	# compile shared shell string/number utilities
+	gcc $(CFLAGS) kernel/shell/util.c -o util.o
+
+sysinfo_commands.o: kernel/shell/sysinfo_commands.c
+	# compile uname/req-syscallop/memtest commands
+	gcc $(CFLAGS) kernel/shell/sysinfo_commands.c -o sysinfo_commands.o
+
+vfs.o: kernel/fs/vfs.c
+	# compile in-ram virtual file system
+	gcc $(CFLAGS) kernel/fs/vfs.c -o vfs.o
+
+initramfs.o: kernel/initramfs.c
+	# compile initramfs: mounts the VFS, then hands control to kernel_main
+	gcc $(CFLAGS) kernel/initramfs.c -o initramfs.o
+
+fs_commands.o: kernel/shell/fs_commands.c
+	# compile ls/cd/pwd/cat shell commands
+	gcc $(CFLAGS) kernel/shell/fs_commands.c -o fs_commands.o
 
 kernel.bin: $(OBJ)
 	# link everything using linker script
