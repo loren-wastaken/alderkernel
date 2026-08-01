@@ -36,11 +36,20 @@ git clone https://github.com/loren-wastaken/alderkernel
 cd alderkernel
 make
 ```
+Create disk if you wanna run with disk
+```bash
+qemu-img create -f raw disk.img 2G
+```
 ## How to run
 
 ```bash
 make run
 ```
+or with disk (disk.img needed)
+```bash
+make run_wdisk
+```
+
 or manually:
 
 ```bash
