@@ -3,7 +3,8 @@
 
 This project is intended for learning and experimentation. You are welcome to use it as a foundation for your own operating system.
 
-### This kernel is built for i386 architecture (x86 or x32 how you prefer to say it.).
+**Architecture:** i386 (32-bit x86)
+
 # Features
 
 1st. PS/2 Keyboard support, needed USB to PS/2 converter or PS/2 compatible keyboard, or start with an VM (PS/2 Keyboard support added!)
