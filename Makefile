@@ -1,12 +1,9 @@
 # object files
 OBJ_DIR = objects
-<<<<<<< Updated upstream
 OBJ = $(addprefix $(OBJ_DIR)/, boot.o main.o print.o idt_asm.o idt_c-code.o io.o ps2_driver.o shell.o interpreter.o pic_driver.o util.o sysinfo_commands.o vfs.o initramfs.o fs_commands.o)
 
 # flags and path to headers folder
-=======
 OBJ = $(addprefix $(OBJ_DIR)/, boot.o main.o print.o idt_asm.o idt_c-code.o io.o ps2_driver.o shell.o interpreter.o pic_driver.o util.o sysinfo_commands.o vfs.o initramfs.o fs_commands.o syscall.o pmm.o heap.o paging.o ata_driver.o mbr.o fat16.o)
->>>>>>> Stashed changes
 CFLAGS = -m32 -ffreestanding -O0 -fno-pic -fno-pie -fno-stack-protector -Ikernel/headers -Ikernel -mno-sse -mno-sse2 -mno-mmx -msoft-float -c
 
 all: alderkernel.iso
@@ -75,8 +72,6 @@ $(OBJ_DIR)/fs_commands.o: kernel/shell/fs_commands.c | $(OBJ_DIR)
 	# compile ls/cd/pwd/cat shell commands
 	gcc $(CFLAGS) kernel/shell/fs_commands.c -o $(OBJ_DIR)/fs_commands.o
 
-<<<<<<< Updated upstream
-=======
 $(OBJ_DIR)/syscall.o: kernel/syscalls/syscall.c | $(OBJ_DIR)
 	# compile syscall dispatcher
 	gcc $(CFLAGS) kernel/syscalls/syscall.c -o $(OBJ_DIR)/syscall.o
@@ -105,7 +100,6 @@ $(OBJ_DIR)/fat16.o: kernel/fs/fat16.c | $(OBJ_DIR)
 	# compile FAT16 formatter
 	gcc $(CFLAGS) kernel/fs/fat16.c -o $(OBJ_DIR)/fat16.o
 
->>>>>>> Stashed changes
 kernel.bin: $(OBJ)
 	# link everything using linker script
 	ld -m elf_i386 -T linker.ld --build-id=none $(OBJ) -o kernel.bin
@@ -123,8 +117,6 @@ clean:
 run: alderkernel.iso
 	# run iso in qemu
 	qemu-system-i386 -cdrom alderkernel.iso
-<<<<<<< Updated upstream
-=======
 
 run_wdisk: alderkernel.iso
 	# run iso in qemu with a raw disk attached on the primary ATA bus,
@@ -138,4 +130,3 @@ deploy:
     # write the kernel into disk.img and turn on qemu with the disk.img
 	./tools/install_to_disk.sh
 	qemu-system-i386 -hda disk.img
->>>>>>> Stashed changes

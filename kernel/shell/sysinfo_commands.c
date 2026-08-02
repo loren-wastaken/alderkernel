@@ -1,19 +1,8 @@
 #include "headers/commands.h"
 #include "headers/util.h"
 #include "../headers/print.h"
-<<<<<<< Updated upstream
-=======
-#include "headers/commands.h"
-#include "headers/util.h"
-#include "../headers/print.h"
-#include "../syscalls/syscall.h"
-#include "../mm/pmm.h"
-#include "../mm/heap.h"
-#include "../drivers/ata.h"
-#include "../fs/mbr.h"
 #include "../fs/fat16.h"
->>>>>>> Stashed changes
-
+#include "../fs/mbr.h"
 // command: uname
 // options: -a (all), -s (kernel name, default), -r (release), -m (machine)
 void command_uname(char* option)
@@ -112,8 +101,6 @@ void command_memtest(void)
         print_text(" word mismatches.\n");
     }
 }
-<<<<<<< Updated upstream
-=======
 
 // command: meminfo
 void command_meminfo(void)
@@ -475,4 +462,3 @@ void command_catdisk(char* arg)
 
     kfree(buf);
 }
->>>>>>> Stashed changes
