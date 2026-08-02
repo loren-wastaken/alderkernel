@@ -174,6 +174,7 @@ void command_help(void)
         "loop <command>             - repeat a command at max speed until a key is pressed\n"
         "diskinfo                   - probe primary ATA disk and dump MBR\n"
         "partinfo                   - list MBR partition table entries\n"
+        "runelf <file>              - load and run a trusted ELF32 binary (ring 0, no isolation)\n"
         "\n"
         "Press Up/Down to recall previous commands.\n"
     );

@@ -7,6 +7,7 @@
 #include "../drivers/ata.h"
 #include "../fs/mbr.h"
 #include "../fs/fat16.h"
+#include "../elf/elf32.h"
 
 // command: uname
 // options: -a (all), -s (kernel name, default), -r (release), -m (machine)
@@ -496,5 +497,105 @@ void command_catdisk(char* arg)
     print_text((const char*)buf);
     print_text("\n");
 
+    kfree(buf);
+}
+// command: runelf <path>
+// loads and runs a trusted ELF32 binary from the FAT16 disk. RING 0,
+// NO ISOLATION - see elf32.h for what this does and doesn't protect
+// against.
+void command_runelf(char* arg)
+{
+    if (arg == (char*)0) {
+        print_text("Usage: runelf <file> or runelf <dir>/<file>\n");
+        return;
+    }
+
+    if (!mount_fat16_partition()) {
+        print_text("No FAT16 partition mounted - run mkpart/mkfs first.\n");
+        return;
+    }
+
+    int slash = -1;
+    for (int i = 0; arg[i] != '\0'; i++) {
+        if (arg[i] == '/') {
+            slash = i;
+            break;
+        }
+    }
+
+    fat16_dirent_t file;
+    int found = 0;
+
+    if (slash < 0) {
+        char name[9]; char ext[4];
+        int dot = -1;
+        for (int i = 0; arg[i] != '\0'; i++) if (arg[i] == '.') { dot = i; break; }
+        if (dot >= 0) {
+            int ni = 0;
+            for (int i = 0; i < dot && ni < 8; i++) name[ni++] = arg[i];
+            name[ni] = '\0';
+            int ei = 0;
+            for (int i = dot + 1; arg[i] != '\0' && ei < 3; i++) ext[ei++] = arg[i];
+            ext[ei] = '\0';
+            found = fat16_find_in_root(name, ext, &file);
+        } else {
+            found = fat16_find_in_root(arg, "", &file);
+        }
+    } else {
+        arg[slash] = '\0';
+        fat16_dirent_t dir;
+        if (fat16_find_in_root(arg, "", &dir) && (dir.attr & 0x10)) {
+            char* rest = &arg[slash + 1];
+            char name[9]; char ext[4];
+            int dot = -1;
+            for (int i = 0; rest[i] != '\0'; i++) if (rest[i] == '.') { dot = i; break; }
+            if (dot >= 0) {
+                int ni = 0;
+                for (int i = 0; i < dot && ni < 8; i++) name[ni++] = rest[i];
+                name[ni] = '\0';
+                int ei = 0;
+                for (int i = dot + 1; rest[i] != '\0' && ei < 3; i++) ext[ei++] = rest[i];
+                ext[ei] = '\0';
+                found = fat16_find_in_dir(dir.cluster, name, ext, &file);
+            } else {
+                found = fat16_find_in_dir(dir.cluster, rest, "", &file);
+            }
+        }
+        arg[slash] = '/';
+    }
+
+    if (!found) {
+        print_text("File not found.\n");
+        return;
+    }
+
+    if (file.size == 0) {
+        print_text("Empty file - not a valid ELF.\n");
+        return;
+    }
+
+    unsigned char* buf = (unsigned char*)kmalloc(file.size);
+    if (buf == (unsigned char*)0) {
+        print_text("Out of heap memory.\n");
+        return;
+    }
+
+    if (!fat16_read_file(file.cluster, file.size, buf, file.size)) {
+        print_text("Read failed.\n");
+        kfree(buf);
+        return;
+    }
+
+    print_text("Loading ELF32 (");
+    print_uint(file.size);
+    print_text(" bytes)...\n");
+
+    if (!elf32_load_and_run(buf, file.size)) {
+        print_text("ELF load failed: invalid header, unsupported format, or corrupt program headers.\n");
+        kfree(buf);
+        return;
+    }
+
+    print_text("Program returned.\n");
     kfree(buf);
 }

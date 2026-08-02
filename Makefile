@@ -1,7 +1,6 @@
 # object files
 OBJ_DIR = objects
-OBJ = $(addprefix $(OBJ_DIR)/, boot.o main.o print.o idt_asm.o idt_c-code.o io.o ps2_driver.o shell.o interpreter.o pic_driver.o util.o sysinfo_commands.o vfs.o initramfs.o fs_commands.o syscall.o pmm.o heap.o paging.o ata_driver.o mbr.o fat16.o)
-
+OBJ = $(addprefix $(OBJ_DIR)/, boot.o main.o print.o idt_asm.o idt_c-code.o io.o ps2_driver.o shell.o interpreter.o pic_driver.o util.o sysinfo_commands.o vfs.o initramfs.o fs_commands.o syscall.o pmm.o heap.o paging.o ata_driver.o mbr.o fat16.o elf32.o)
 # flags and path to headers folder
 CFLAGS = -m32 -ffreestanding -O0 -fno-pic -fno-pie -fno-stack-protector -Ikernel/headers -Ikernel -mno-sse -mno-sse2 -mno-mmx -msoft-float -c
 
@@ -98,6 +97,10 @@ $(OBJ_DIR)/mbr.o: kernel/fs/mbr.c | $(OBJ_DIR)
 $(OBJ_DIR)/fat16.o: kernel/fs/fat16.c | $(OBJ_DIR)
 	# compile FAT16 formatter
 	gcc $(CFLAGS) kernel/fs/fat16.c -o $(OBJ_DIR)/fat16.o
+
+$(OBJ_DIR)/elf32.o: kernel/elf/elf32.c | $(OBJ_DIR)
+	# compile ELF32 loader (ring 0, no isolation)
+	gcc $(CFLAGS) kernel/elf/elf32.c -o $(OBJ_DIR)/elf32.o
 
 kernel.bin: $(OBJ)
 	# link everything using linker script

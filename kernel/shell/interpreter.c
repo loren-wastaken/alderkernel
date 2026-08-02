@@ -98,6 +98,9 @@ void interpret_command(char* input)
     else if (strcmp(input, "catdisk") == 0) {
         command_catdisk(args);
     }
+    else if (strcmp(input, "runelf") == 0) {
+        command_runelf(args);
+    }
     else {
         print_text("Unknown command: ");
         print_text(input);
