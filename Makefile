@@ -1,9 +1,8 @@
 # object files
 OBJ_DIR = objects
-OBJ = $(addprefix $(OBJ_DIR)/, boot.o main.o print.o idt_asm.o idt_c-code.o io.o ps2_driver.o shell.o interpreter.o pic_driver.o util.o sysinfo_commands.o vfs.o initramfs.o fs_commands.o)
+OBJ = $(addprefix $(OBJ_DIR)/, boot.o main.o print.o idt_asm.o idt_c-code.o io.o ps2_driver.o shell.o interpreter.o pic_driver.o util.o sysinfo_commands.o vfs.o initramfs.o fs_commands.o syscall.o pmm.o heap.o paging.o ata_driver.o mbr.o fat16.o)
 
 # flags and path to headers folder
-OBJ = $(addprefix $(OBJ_DIR)/, boot.o main.o print.o idt_asm.o idt_c-code.o io.o ps2_driver.o shell.o interpreter.o pic_driver.o util.o sysinfo_commands.o vfs.o initramfs.o fs_commands.o syscall.o pmm.o heap.o paging.o ata_driver.o mbr.o fat16.o)
 CFLAGS = -m32 -ffreestanding -O0 -fno-pic -fno-pie -fno-stack-protector -Ikernel/headers -Ikernel -mno-sse -mno-sse2 -mno-mmx -msoft-float -c
 
 all: alderkernel.iso
@@ -126,7 +125,7 @@ run_wdisk: alderkernel.iso
 	# BIOS tries (and fails) to boot from disk.img instead.
 	qemu-system-i386 -cdrom alderkernel.iso -hda disk.img -boot d
 
-deploy:
-    # write the kernel into disk.img and turn on qemu with the disk.img
+deploy: alderkernel.iso
+	# write the kernel into disk.img and turn on qemu with the disk.img
 	./tools/install_to_disk.sh
 	qemu-system-i386 -hda disk.img

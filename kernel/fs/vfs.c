@@ -1,13 +1,10 @@
 #include "vfs.h"
 #include "../headers/print.h"
+#include "../mm/heap.h"
 
 // Static node pool - this is an in-RAM filesystem with no backing
 // storage and no allocator, so every node lives here for the life
 // of the kernel.
-#define VFS_MAX_NODES 64
-
-static vfs_node_t node_pool[VFS_MAX_NODES];
-static unsigned int node_count = 0;
 
 static vfs_node_t* vfs_root = (vfs_node_t*)0;
 static vfs_node_t* vfs_cwd  = (vfs_node_t*)0;
@@ -37,11 +34,11 @@ static int str_eq(const char* a, const char* b)
 
 static vfs_node_t* vfs_alloc_node(const char* name, vfs_type_t type, vfs_node_t* parent)
 {
-    if (node_count >= VFS_MAX_NODES) {
-        return (vfs_node_t*)0;
+    vfs_node_t* node = (vfs_node_t*)kmalloc(sizeof(vfs_node_t));
+    if (node == (vfs_node_t*)0) {
+        return (vfs_node_t*)0; // heap exhausted
     }
 
-    vfs_node_t* node = &node_pool[node_count++];
     name_copy(node->name, name, VFS_MAX_NAME);
     node->type = type;
     node->parent = parent;
@@ -84,7 +81,6 @@ vfs_node_t* vfs_find_child(vfs_node_t* parent, const char* name)
 
 void vfs_init(void)
 {
-    node_count = 0;
 
     vfs_root = vfs_alloc_node("/", VFS_DIR, (vfs_node_t*)0);
 

@@ -165,6 +165,7 @@ void command_help(void)
         "uname [-a|-s|-r|-m]        - show system info\n"
         "req-syscallop <number>     - request a syscall operation (stub)\n"
         "memtest                    - run a simple memory test\n"
+        "meminfo                    - show physical + heap memory stats\n"
         "ls [path]                  - list a directory\n"
         "cd [path]                  - change directory\n"
         "pwd                        - print working directory\n"
@@ -220,4 +221,44 @@ void command_halt(void)
     while (1) {
         asm volatile("hlt");
     }
+}
+
+// command: loop <command>
+// repeats the given command as fast as possible, no throttling, no
+// delay - until any key is pressed. This is deliberately unthrottled:
+// no hlt between iterations, no cap. Genuinely maxes out the CPU.
+void command_loop(char* arg)
+{
+    if (arg == (char*)0) {
+        print_text("Usage: loop <command>\n");
+        return;
+    }
+
+    char saved[SHELL_BUFFER_SIZE];
+    str_copy(saved, arg);
+
+    print_text("Looping '");
+    print_text(saved);
+    print_text("' at max speed - press any key to stop.\n");
+
+    // drain anything already buffered (e.g. a stray keypress right
+    // before Enter) so the loop doesn't instantly stop on entry
+    while (key_buffer_pop() != 0) { }
+
+    char working[SHELL_BUFFER_SIZE];
+    unsigned int iterations = 0;
+
+    while (1) {
+        if (key_buffer_pop() != 0) {
+            break;
+        }
+
+        str_copy(working, saved); // interpret_command mutates its input,
+        interpret_command(working); // so re-copy from `saved` every time
+        iterations++;
+    }
+
+    print_text("\nLoop stopped after ");
+    print_uint(iterations); // NOTE: wraps if it somehow hits 4 billion
+    print_text(" iterations.\n");
 }

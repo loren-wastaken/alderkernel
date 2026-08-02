@@ -1,8 +1,13 @@
 #include "headers/commands.h"
 #include "headers/util.h"
 #include "../headers/print.h"
-#include "../fs/fat16.h"
+#include "../syscalls/syscall.h"
+#include "../mm/pmm.h"
+#include "../mm/heap.h"
+#include "../drivers/ata.h"
 #include "../fs/mbr.h"
+#include "../fs/fat16.h"
+
 // command: uname
 // options: -a (all), -s (kernel name, default), -r (release), -m (machine)
 void command_uname(char* option)
@@ -32,11 +37,7 @@ void command_uname(char* option)
     print_text("\n");
 }
 
-
-
 // command: req-syscallop <syscall number>
-// Placeholder until the syscall interface is written - just parses
-// and echoes the requested number back for now.
 void command_req_syscallop(char* arg)
 {
     if (arg == (char*)0) {
@@ -46,13 +47,12 @@ void command_req_syscallop(char* arg)
 
     unsigned int syscall_num = str_to_uint(arg);
 
-    print_text("Syscall request queued: #");
+    print_text("Syscall requested: #");
     print_uint(syscall_num);
     print_text("\n");
-    print_text("Syscall interface not implemented yet.\n");
+
+    syscall_dispatch(syscall_num);
 }
-
-
 
 // command: memtest
 // NAIVE fixed-address memory test - there is no multiboot memory map
@@ -119,6 +119,7 @@ void command_meminfo(void)
     print_uint(heap_get_used_bytes());
     print_text(" bytes used\n");
 }
+
 // command: diskinfo
 void command_diskinfo(void)
 {
@@ -148,6 +149,7 @@ void command_diskinfo(void)
     print_hex(sector[510] | (sector[511] << 8));
     print_text("\n");
 }
+
 // command: partinfo
 void command_partinfo(void)
 {
@@ -177,24 +179,7 @@ void command_partinfo(void)
         print_text("\n");
     }
 }
-// command: mkpart
-// writes a single FAT16-type partition covering the whole drive
-// (minus a standard 1MB alignment gap at the start). DESTRUCTIVE -
-// overwrites sector 0.
-void command_mkpart(void)
-{
-    unsigned int start, count;
-    if (!do_mkpart(&start, &count)) {
-        print_text("Failed to write partition table (no drive, or drive too small).\n");
-        return;
-    }
 
-    print_text("Partition table written: type=0x06 (FAT16) start_lba=");
-    print_uint(start);
-    print_text(" sectors=");
-    print_uint(count);
-    print_text("\n");
-}
 static int do_mkpart(unsigned int* out_start, unsigned int* out_count)
 {
     if (!ata_identify()) {
@@ -225,6 +210,58 @@ static int do_mkfs(unsigned int start, unsigned int count)
 {
     return fat16_format(start, count);
 }
+
+// command: mkpart
+// writes a single FAT16-type partition covering the whole drive
+// (minus a standard 1MB alignment gap at the start). DESTRUCTIVE -
+// overwrites sector 0.
+void command_mkpart(void)
+{
+    unsigned int start, count;
+    if (!do_mkpart(&start, &count)) {
+        print_text("Failed to write partition table (no drive, or drive too small).\n");
+        return;
+    }
+
+    print_text("Partition table written: type=0x06 (FAT16) start_lba=");
+    print_uint(start);
+    print_text(" sectors=");
+    print_uint(count);
+    print_text("\n");
+}
+
+// command: mkfs
+// formats the first FAT16-type partition found in the MBR. DESTRUCTIVE.
+void command_mkfs(void)
+{
+    mbr_partition_t parts[4];
+    if (mbr_read_partitions(parts) == 0) {
+        print_text("No partition table found - run mkpart first.\n");
+        return;
+    }
+
+    for (int i = 0; i < 4; i++) {
+        if (parts[i].type != 0x06) {
+            continue;
+        }
+
+        print_text("Formatting partition ");
+        print_uint(i);
+        print_text(" as FAT16 (");
+        print_uint(parts[i].sector_count);
+        print_text(" sectors)...\n");
+
+        if (fat16_format(parts[i].lba_start, parts[i].sector_count)) {
+            print_text("Format complete.\n");
+        } else {
+            print_text("Format failed (partition too small or invalid cluster count).\n");
+        }
+        return;
+    }
+
+    print_text("No FAT16 (type 0x06) partition found.\n");
+}
+
 static int install_placeholder_file(unsigned int dir_cluster, const char* name, const char* ext, const char* content)
 {
     return fat16_create_file_in_dir(dir_cluster, name, ext, (const unsigned char*)content, str_len(content));
@@ -298,6 +335,7 @@ void command_install(void)
     print_text("Next: on the HOST, run tools/install_to_disk.sh to install\n");
     print_text("GRUB and copy kernel.bin, making this disk directly bootable.\n");
 }
+
 static void print_dirent(fat16_dirent_t* d)
 {
     if (d->attr & 0x10) {
@@ -380,7 +418,6 @@ void command_catdisk(char* arg)
         return;
     }
 
-    // split on '/' if present - only one level of nesting supported
     int slash = -1;
     for (int i = 0; arg[i] != '\0'; i++) {
         if (arg[i] == '/') {
@@ -395,7 +432,6 @@ void command_catdisk(char* arg)
     if (slash < 0) {
         found = fat16_find_in_root(arg, "", &file);
         if (!found) {
-            // try splitting arg itself into name+ext on '.'
             char name[9]; char ext[4];
             int dot = -1;
             for (int i = 0; arg[i] != '\0'; i++) if (arg[i] == '.') { dot = i; break; }
@@ -431,7 +467,7 @@ void command_catdisk(char* arg)
                 found = fat16_find_in_dir(dir.cluster, rest, "", &file);
             }
         }
-        arg[slash] = '/'; // restore, in case caller reuses the buffer
+        arg[slash] = '/';
     }
 
     if (!found) {

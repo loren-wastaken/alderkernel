@@ -9,26 +9,20 @@
 static char* split_args(char* input)
 {
     char* p = input;
-
     while (*p && *p != ' ') {
         p++;
     }
-
     if (*p != ' ') {
         return (char*)0; // no space found - no argument
     }
-
     *p = '\0'; // terminate the command
     p++;
-
     while (*p == ' ') {
         p++;
     }
-
     if (*p == '\0') {
         return (char*)0; // trailing whitespace only
     }
-
     return p;
 }
 

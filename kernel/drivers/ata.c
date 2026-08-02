@@ -51,7 +51,7 @@ static unsigned int total_sectors_cache = 0;
 
 int ata_identify(void)
 {
-    outb(ATA_DRIVE_HEAD, 0xA0);
+    outb(ATA_DRIVE_HEAD, 0xA0); // master drive, LBA mode not needed for IDENTIFY
     outb(ATA_SECTOR_CNT, 0);
     outb(ATA_LBA_LO, 0);
     outb(ATA_LBA_MID, 0);
@@ -60,7 +60,7 @@ int ata_identify(void)
 
     unsigned char status = inb(ATA_STATUS);
     if (status == 0) {
-        return 0;
+        return 0; // no drive on this bus at all
     }
 
     if (!ata_wait_drq()) {

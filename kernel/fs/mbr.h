@@ -13,6 +13,7 @@ typedef struct {
 // entries with a nonzero type, or 0 if the MBR signature (0xAA55)
 // is missing/invalid - i.e. the disk has no partition table yet.
 int mbr_read_partitions(mbr_partition_t out[4]);
+
 int mbr_write_partition(int index, unsigned char bootable, unsigned char type, unsigned int lba_start, unsigned int sector_count);
 
 #endif

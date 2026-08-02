@@ -6,4 +6,6 @@ objects/
 *.tar
 *.tar.gz
 *.img
-disk.img
+*.gz
+*_tar.gz
+alderkernel_tar.gz

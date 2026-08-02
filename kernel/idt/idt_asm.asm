@@ -1,35 +1,102 @@
 global idt_load
 global keyboard_stub
-global isr13
+global isr_stub_table
 
 extern keyboard_handler
-
+extern isr_exception_handler
 
 idt_load:
     mov eax, [esp+4]
     lidt [eax]
     ret
 
-global isr13
+; ---------------------------------------------------------------
+; Generic CPU exception stubs (vectors 0-31)
+;
+; The CPU automatically pushes an error code for vectors
+; 8, 10, 11, 12, 13, 14, 17 before jumping here - for every other
+; vector it does NOT, so those stubs push a dummy 0 to keep the
+; stack layout identical either way.
+; ---------------------------------------------------------------
 
-isr13:
-    cli
+%macro ISR_NOERR 1
+global isr%1
+isr%1:
+    push dword 0
+    push dword %1
+    jmp isr_common_stub
+%endmacro
 
-.loop:
-    hlt
-    jmp .loop
+%macro ISR_ERR 1
+global isr%1
+isr%1:
+    push dword %1
+    jmp isr_common_stub
+%endmacro
 
-global isr3
+ISR_NOERR 0
+ISR_NOERR 1
+ISR_NOERR 2
+ISR_NOERR 3
+ISR_NOERR 4
+ISR_NOERR 5
+ISR_NOERR 6
+ISR_NOERR 7
+ISR_ERR   8
+ISR_NOERR 9
+ISR_ERR   10
+ISR_ERR   11
+ISR_ERR   12
+ISR_ERR   13
+ISR_ERR   14
+ISR_NOERR 15
+ISR_NOERR 16
+ISR_ERR   17
+ISR_NOERR 18
+ISR_NOERR 19
+ISR_NOERR 20
+ISR_NOERR 21
+ISR_NOERR 22
+ISR_NOERR 23
+ISR_NOERR 24
+ISR_NOERR 25
+ISR_NOERR 26
+ISR_NOERR 27
+ISR_NOERR 28
+ISR_NOERR 29
+ISR_NOERR 30
+ISR_NOERR 31
 
-isr3:
-    cli
+isr_common_stub:
+    pusha
 
-.loop:
-    hlt
-    jmp .loop
+    ; vector and error_code were pushed BEFORE pusha, so they now
+    ; sit 32 bytes deeper (pusha pushes 8 x 4-byte regs)
+    mov eax, [esp+32]   ; vector number
+    mov ebx, [esp+36]   ; error code
 
+    push ebx
+    push eax
+    call isr_exception_handler
+    add esp, 8          ; pop the two args we just pushed
+
+    popa
+    add esp, 8           ; pop our vector + error_code push
+    iretd
+
+; ---------------------------------------------------------------
+; table of stub addresses so idt.c can register all 32 in a loop
+; ---------------------------------------------------------------
+isr_stub_table:
+    dd isr0,  isr1,  isr2,  isr3,  isr4,  isr5,  isr6,  isr7
+    dd isr8,  isr9,  isr10, isr11, isr12, isr13, isr14, isr15
+    dd isr16, isr17, isr18, isr19, isr20, isr21, isr22, isr23
+    dd isr24, isr25, isr26, isr27, isr28, isr29, isr30, isr31
+
+; ---------------------------------------------------------------
+; keyboard IRQ1 stub - unchanged
+; ---------------------------------------------------------------
 keyboard_stub:
-
     pusha
 
     call keyboard_handler
