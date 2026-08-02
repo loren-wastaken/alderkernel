@@ -1,41 +1,67 @@
 # Alder Kernel
-## Alder Kernel is a hobby operating system kernel made purely for learning. So there might be some errors/inefficient ways to do coding and etc. I do not prefer to make real code from this Kernel.
-### This kernel is built for i386 architecture (x86 or x32 how you prefer to say it.).
-# Features
+## A hobby operating system kernel written from scratch in C and Assembly for educational purposes.
 
-1st. PS/2 Keyboard support, needed USB to PS/2 converter or PS/2 compatible keyboard, or start with an VM (PS/2 Keyboard support added!)
+This project is intended for learning and experimentation. You are welcome to use it as a foundation for your own operating system.
 
-2nd. InitramFS (Added!)
+**Architecture:** i386 (32-bit x86)
 
-3rd. Shell (Added too!)
+## Legend:
 
-4th. Shell History (Added!)
+🛠️ - Building/working on it
 
-# How to build 
- - Clone git repo
-### by typing `git clone https://github.com/loren-wastaken/alderkernel`
- - After downloading
-### `cd` into the directory alderkernel
- - Making sure that you have EVERY tool
-### This project needs: NASM,gcc,make and ld
-What these tools do?
-### NASM assembles needed files for boot (boot.asm and etc.) that are NEEDED to turn on the kernel.
-### gcc or 'GNU Compiler Collection' compiles all .c (C code) files to .o and they get into file kernel.bin.
-### make is a tool for [Makefile](Makefile) file that makes compiling easier instead of typing long commands that you can misspell.
-### ld links all files so they can get usable.
+[x] - Working/Stable
 
---------------- How to run -------------------
+## Features
 
-After building:
+- [x] PS/2 Keyboard support 
 
-### Using QEMU
+- [x] InitramFS 
 
-`make run`
+-  🛠️ Shell (W.I.P, adding new features and commands!)
 
-or:
+- [x] Shell history 
 
-`qemu-system-i386 -cdrom alderkernel.iso`
+## Requirements
+
+- NASM
+- GCC
+- GNU Make
+- GNU ld
+- QEMU
+
+## Build
+
+```bash
+git clone https://github.com/loren-wastaken/alderkernel
+cd alderkernel
+make
+```
+Create disk if you wanna run with disk
+```bash
+qemu-img create -f raw disk.img 2G
+```
+## How to run
+
+```bash
+make run
+```
+or with disk (disk.img needed)
+```bash
+make run_wdisk
+```
+
+or manually:
+
+```bash
+qemu-system-i386 -cdrom alderkernel.iso`
+```
+## Building apps for AlderKernel
+
+Not possible yet - see [apps.md](apps.md) for the planned prerequisite
+chain (installer, disk/partition detection, ext4, ELF loading) and
+current status.
 
 [Author](https://github.com/loren-wastaken)
-[License](LICENSE)
+
+**License:** [MIT](LICENSE)
                      

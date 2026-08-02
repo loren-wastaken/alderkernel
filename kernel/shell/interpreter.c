@@ -77,8 +77,6 @@ void interpret_command(char* input)
     else if (strcmp(input, "cat") == 0) {
         command_cat(args);
     }
-<<<<<<< Updated upstream
-=======
     else if (strcmp(input, "meminfo") == 0) {
         command_meminfo();
     }
@@ -106,7 +104,6 @@ void interpret_command(char* input)
     else if (strcmp(input, "catdisk") == 0) {
         command_catdisk(args);
     }
->>>>>>> Stashed changes
     else {
         print_text("Unknown command: ");
         print_text(input);
