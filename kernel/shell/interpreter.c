@@ -77,6 +77,36 @@ void interpret_command(char* input)
     else if (strcmp(input, "cat") == 0) {
         command_cat(args);
     }
+<<<<<<< Updated upstream
+=======
+    else if (strcmp(input, "meminfo") == 0) {
+        command_meminfo();
+    }
+    else if (strcmp(input, "loop") == 0) {
+        command_loop(args);
+    }
+    else if (strcmp(input, "diskinfo") == 0) {
+        command_diskinfo();
+    }
+    else if (strcmp(input, "partinfo") == 0) {
+        command_partinfo();
+    }
+    else if (strcmp(input, "mkpart") == 0) {
+        command_mkpart();
+    }
+    else if (strcmp(input, "mkfs") == 0) {
+        command_mkfs();
+    }
+    else if (strcmp(input, "install") == 0) {
+        command_install();
+    }
+    else if (strcmp(input, "lsdisk") == 0) {
+        command_lsdisk(args);
+    }
+    else if (strcmp(input, "catdisk") == 0) {
+        command_catdisk(args);
+    }
+>>>>>>> Stashed changes
     else {
         print_text("Unknown command: ");
         print_text(input);

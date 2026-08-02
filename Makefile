@@ -1,8 +1,12 @@
 # object files
 OBJ_DIR = objects
+<<<<<<< Updated upstream
 OBJ = $(addprefix $(OBJ_DIR)/, boot.o main.o print.o idt_asm.o idt_c-code.o io.o ps2_driver.o shell.o interpreter.o pic_driver.o util.o sysinfo_commands.o vfs.o initramfs.o fs_commands.o)
 
 # flags and path to headers folder
+=======
+OBJ = $(addprefix $(OBJ_DIR)/, boot.o main.o print.o idt_asm.o idt_c-code.o io.o ps2_driver.o shell.o interpreter.o pic_driver.o util.o sysinfo_commands.o vfs.o initramfs.o fs_commands.o syscall.o pmm.o heap.o paging.o ata_driver.o mbr.o fat16.o)
+>>>>>>> Stashed changes
 CFLAGS = -m32 -ffreestanding -O0 -fno-pic -fno-pie -fno-stack-protector -Ikernel/headers -Ikernel -mno-sse -mno-sse2 -mno-mmx -msoft-float -c
 
 all: alderkernel.iso
@@ -71,6 +75,37 @@ $(OBJ_DIR)/fs_commands.o: kernel/shell/fs_commands.c | $(OBJ_DIR)
 	# compile ls/cd/pwd/cat shell commands
 	gcc $(CFLAGS) kernel/shell/fs_commands.c -o $(OBJ_DIR)/fs_commands.o
 
+<<<<<<< Updated upstream
+=======
+$(OBJ_DIR)/syscall.o: kernel/syscalls/syscall.c | $(OBJ_DIR)
+	# compile syscall dispatcher
+	gcc $(CFLAGS) kernel/syscalls/syscall.c -o $(OBJ_DIR)/syscall.o
+
+$(OBJ_DIR)/pmm.o: kernel/mm/pmm.c | $(OBJ_DIR)
+	# compile physical memory manager (bitmap allocator)
+	gcc $(CFLAGS) kernel/mm/pmm.c -o $(OBJ_DIR)/pmm.o
+
+$(OBJ_DIR)/heap.o: kernel/mm/heap.c | $(OBJ_DIR)
+	# compile heap allocator (kmalloc/kfree)
+	gcc $(CFLAGS) kernel/mm/heap.c -o $(OBJ_DIR)/heap.o
+
+$(OBJ_DIR)/paging.o: kernel/mm/paging.c | $(OBJ_DIR)
+	# compile paging (identity-mapped page tables)
+	gcc $(CFLAGS) kernel/mm/paging.c -o $(OBJ_DIR)/paging.o
+
+$(OBJ_DIR)/ata_driver.o: kernel/drivers/ata.c | $(OBJ_DIR)
+	# compile ATA PIO disk driver
+	gcc $(CFLAGS) kernel/drivers/ata.c -o $(OBJ_DIR)/ata_driver.o
+
+$(OBJ_DIR)/mbr.o: kernel/fs/mbr.c | $(OBJ_DIR)
+	# compile MBR partition table parser
+	gcc $(CFLAGS) kernel/fs/mbr.c -o $(OBJ_DIR)/mbr.o
+
+$(OBJ_DIR)/fat16.o: kernel/fs/fat16.c | $(OBJ_DIR)
+	# compile FAT16 formatter
+	gcc $(CFLAGS) kernel/fs/fat16.c -o $(OBJ_DIR)/fat16.o
+
+>>>>>>> Stashed changes
 kernel.bin: $(OBJ)
 	# link everything using linker script
 	ld -m elf_i386 -T linker.ld --build-id=none $(OBJ) -o kernel.bin
@@ -88,3 +123,19 @@ clean:
 run: alderkernel.iso
 	# run iso in qemu
 	qemu-system-i386 -cdrom alderkernel.iso
+<<<<<<< Updated upstream
+=======
+
+run_wdisk: alderkernel.iso
+	# run iso in qemu with a raw disk attached on the primary ATA bus,
+	# for testing ata.c / fat16.c / future filesystem work.
+	# -boot d forces booting from the CD-ROM even though a disk with a
+	# valid-looking partition table is also attached - otherwise QEMU's
+	# BIOS tries (and fails) to boot from disk.img instead.
+	qemu-system-i386 -cdrom alderkernel.iso -hda disk.img -boot d
+
+deploy:
+    # write the kernel into disk.img and turn on qemu with the disk.img
+	./tools/install_to_disk.sh
+	qemu-system-i386 -hda disk.img
+>>>>>>> Stashed changes

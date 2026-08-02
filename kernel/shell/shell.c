@@ -170,6 +170,9 @@ void command_help(void)
         "pwd                        - print working directory\n"
         "cat <file>                 - print a file's contents\n"
         "halt                       - stop the CPU\n"
+        "loop <command>             - repeat a command at max speed until a key is pressed\n"
+        "diskinfo                   - probe primary ATA disk and dump MBR\n"
+        "partinfo                   - list MBR partition table entries\n"
         "\n"
         "Press Up/Down to recall previous commands.\n"
     );

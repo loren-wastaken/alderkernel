@@ -5,3 +5,5 @@ iso/
 objects/
 *.tar
 *.tar.gz
+*.img
+disk.img
