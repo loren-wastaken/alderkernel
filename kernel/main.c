@@ -71,5 +71,6 @@ void kernel_start(unsigned int multiboot_magic, unsigned int multiboot_info_addr
 // has finished setting up. never returns.
 void kernel_main(void)
 {
+    print_text("Kernel loaded!");
     shell_start();
 }

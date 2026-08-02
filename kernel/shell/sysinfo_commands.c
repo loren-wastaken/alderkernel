@@ -19,7 +19,7 @@ void command_uname(char* option)
     }
 
     if (strcmp(option, "-r") == 0) {
-        print_text("0.1\n");
+        print_text("0.3\n");
         return;
     }
 
@@ -29,7 +29,7 @@ void command_uname(char* option)
     }
 
     if (strcmp(option, "-a") == 0) {
-        print_text("AlderKernel 0.1 i386 zSlash\n");
+        print_text("AlderKernel 0.3 i386 zSlash\n");
         return;
     }
 
