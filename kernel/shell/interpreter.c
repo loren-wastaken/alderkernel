@@ -9,26 +9,20 @@
 static char* split_args(char* input)
 {
     char* p = input;
-
     while (*p && *p != ' ') {
         p++;
     }
-
     if (*p != ' ') {
         return (char*)0; // no space found - no argument
     }
-
     *p = '\0'; // terminate the command
     p++;
-
     while (*p == ' ') {
         p++;
     }
-
     if (*p == '\0') {
         return (char*)0; // trailing whitespace only
     }
-
     return p;
 }
 
@@ -88,6 +82,21 @@ void interpret_command(char* input)
     }
     else if (strcmp(input, "partinfo") == 0) {
         command_partinfo();
+    }
+    else if (strcmp(input, "mkpart") == 0) {
+        command_mkpart();
+    }
+    else if (strcmp(input, "mkfs") == 0) {
+        command_mkfs();
+    }
+    else if (strcmp(input, "install") == 0) {
+        command_install();
+    }
+    else if (strcmp(input, "lsdisk") == 0) {
+        command_lsdisk(args);
+    }
+    else if (strcmp(input, "catdisk") == 0) {
+        command_catdisk(args);
     }
     else {
         print_text("Unknown command: ");

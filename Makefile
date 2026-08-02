@@ -1,6 +1,8 @@
 # object files
 OBJ_DIR = objects
-OBJ = $(addprefix $(OBJ_DIR)/, boot.o main.o print.o idt_asm.o idt_c-code.o io.o ps2_driver.o shell.o interpreter.o pic_driver.o util.o sysinfo_commands.o vfs.o initramfs.o fs_commands.o syscall.o pmm.o heap.o paging.o ata_driver.o mbr.o)
+OBJ = $(addprefix $(OBJ_DIR)/, boot.o main.o print.o idt_asm.o idt_c-code.o io.o ps2_driver.o shell.o interpreter.o pic_driver.o util.o sysinfo_commands.o vfs.o initramfs.o fs_commands.o syscall.o pmm.o heap.o paging.o ata_driver.o mbr.o fat16.o)
+
+# flags and path to headers folder
 CFLAGS = -m32 -ffreestanding -O0 -fno-pic -fno-pie -fno-stack-protector -Ikernel/headers -Ikernel -mno-sse -mno-sse2 -mno-mmx -msoft-float -c
 
 all: alderkernel.iso
@@ -93,6 +95,10 @@ $(OBJ_DIR)/mbr.o: kernel/fs/mbr.c | $(OBJ_DIR)
 	# compile MBR partition table parser
 	gcc $(CFLAGS) kernel/fs/mbr.c -o $(OBJ_DIR)/mbr.o
 
+$(OBJ_DIR)/fat16.o: kernel/fs/fat16.c | $(OBJ_DIR)
+	# compile FAT16 formatter
+	gcc $(CFLAGS) kernel/fs/fat16.c -o $(OBJ_DIR)/fat16.o
+
 kernel.bin: $(OBJ)
 	# link everything using linker script
 	ld -m elf_i386 -T linker.ld --build-id=none $(OBJ) -o kernel.bin
@@ -113,5 +119,13 @@ run: alderkernel.iso
 
 run_wdisk: alderkernel.iso
 	# run iso in qemu with a raw disk attached on the primary ATA bus,
-	# for testing ata.c / diskinfo / future filesystem work
-	qemu-system-i386 -cdrom alderkernel.iso -hda disk.img
+	# for testing ata.c / fat16.c / future filesystem work.
+	# -boot d forces booting from the CD-ROM even though a disk with a
+	# valid-looking partition table is also attached - otherwise QEMU's
+	# BIOS tries (and fails) to boot from disk.img instead.
+	qemu-system-i386 -cdrom alderkernel.iso -hda disk.img -boot d
+
+deploy: alderkernel.iso
+	# write the kernel into disk.img and turn on qemu with the disk.img
+	./tools/install_to_disk.sh
+	qemu-system-i386 -hda disk.img

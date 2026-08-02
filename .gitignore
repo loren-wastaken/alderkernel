@@ -5,7 +5,7 @@ iso/
 objects/
 *.tar
 *.tar.gz
+*.img
 *.gz
 *_tar.gz
 alderkernel_tar.gz
-disk.img

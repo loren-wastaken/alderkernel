@@ -39,3 +39,11 @@ void str_copy(char* dst, const char* src)
     }
     dst[i] = '\0';
 }
+unsigned int str_len(const char* s)
+{
+    unsigned int len = 0;
+    while (s[len]) {
+        len++;
+    }
+    return len;
+}

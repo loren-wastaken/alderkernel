@@ -17,5 +17,10 @@ void command_cat(char* arg);
 void command_loop(char* arg);
 void command_diskinfo(void);
 void command_partinfo(void);
+void command_mkpart(void);
+void command_mkfs(void);
+void command_install(void);
+void command_lsdisk(char* arg);
+void command_catdisk(char* arg);
 
 #endif

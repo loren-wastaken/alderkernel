@@ -47,6 +47,8 @@ static int ata_wait_drq(void)
     return 0; // timed out
 }
 
+static unsigned int total_sectors_cache = 0;
+
 int ata_identify(void)
 {
     outb(ATA_DRIVE_HEAD, 0xA0); // master drive, LBA mode not needed for IDENTIFY
@@ -65,14 +67,20 @@ int ata_identify(void)
         return 0;
     }
 
-    // drive responded and has data ready - discard the 256-word
-    // IDENTIFY payload for now, we only care that it exists
+    unsigned short words[256];
     for (int i = 0; i < 256; i++) {
-        inb(ATA_DATA);
-        inb(ATA_DATA);
+        words[i] = inw(ATA_DATA);
     }
 
+    // words 60-61: total user-addressable sectors (LBA28), low word first
+    total_sectors_cache = (unsigned int)words[60] | ((unsigned int)words[61] << 16);
+
     return 1;
+}
+
+unsigned int ata_get_total_sectors(void)
+{
+    return total_sectors_cache;
 }
 
 int ata_read_sector(unsigned int lba, unsigned char* buffer)
@@ -94,7 +102,7 @@ int ata_read_sector(unsigned int lba, unsigned char* buffer)
 
     unsigned short* buf16 = (unsigned short*)buffer;
     for (int i = 0; i < 256; i++) {
-        buf16[i] = inb(ATA_DATA) | (inb(ATA_DATA) << 8);
+        buf16[i] = inw(ATA_DATA);
     }
 
     return 1;
@@ -119,8 +127,7 @@ int ata_write_sector(unsigned int lba, const unsigned char* buffer)
 
     const unsigned short* buf16 = (const unsigned short*)buffer;
     for (int i = 0; i < 256; i++) {
-        outb(ATA_DATA, buf16[i] & 0xFF);
-        outb(ATA_DATA, (buf16[i] >> 8) & 0xFF);
+        outw(ATA_DATA, buf16[i]);
     }
 
     return 1;

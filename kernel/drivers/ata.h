@@ -7,6 +7,8 @@
 int ata_read_sector(unsigned int lba, unsigned char* buffer);
 int ata_write_sector(unsigned int lba, const unsigned char* buffer);
 
+unsigned int ata_get_total_sectors(void);
+
 // returns 1 if a drive responded to IDENTIFY, 0 if none present
 int ata_identify(void);
 
