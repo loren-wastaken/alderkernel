@@ -17,9 +17,11 @@ This project is intended for learning and experimentation. You are welcome to us
 
 - [x] InitramFS 
 
--  🛠️ Shell (W.I.P, adding new features and commands!)
+- [x] Shell
 
 - [x] Shell history 
+
+- [x] Booting from disk
 
 ## Requirements
 
