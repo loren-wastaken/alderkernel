@@ -1,5 +1,5 @@
 # Alder Kernel
-[Alder Kernel Logo](assets-4-docs/icon.svg)
+![Alder Kernel Logo](assets-4-docs/icon.svg)
 ## A hobby operating system kernel written from scratch in C and Assembly for educational purposes.
 
 This project is intended for learning and experimentation. You are welcome to use it as a foundation for your own operating system.
